@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "preserveSymlinks": true,
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],  // Важно указать папку с типами
+    "types": ["node", "express"],
+    "outDir": "./disc",  
+  },
+  "include": ["src/**/*"]  // Убедитесь, что включены все файлы проекта
+}
