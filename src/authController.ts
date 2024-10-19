@@ -17,6 +17,7 @@ interface User {
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
+    console.log(req.body);
 
     // Логика для поиска пользователя и проверки пароля
     // (предполагаем, что ваш код корректен и использует правильный SQL-запрос)
