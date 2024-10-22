@@ -61,9 +61,10 @@ export const inboxMessengers = async (req: Request, res: Response) => {
         userId,
         dialog_user,
       ]);
-      res
-        .status(404)
-        .json({ message: "Пользователь не найден", messages: messages });
+      res.status(200).json({
+        messages: messages,
+        user: user,
+      });
       return;
     } catch (error) {
       res
