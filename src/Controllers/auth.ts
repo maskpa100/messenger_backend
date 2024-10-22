@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { query_MySql } from "./config/MySql";
-import { SECRET_KEY } from "./config/authSecret";
+import { query_MySql } from "../config/MySql";
+import { SECRET_KEY } from "../config/authSecret";
 
 // Определение типа для токена
 interface JwtPayload {
