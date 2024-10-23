@@ -44,7 +44,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const token = jwt.sign(
       { userId: user.id, username: user.email },
       SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "1y" }
     );
 
     // Отправляем ответ с токеном
@@ -105,7 +105,8 @@ export const verifyToken = (
   try {
     const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
     (req as AuthenticatedRequest).user = decoded; // Приведение к типу AuthenticatedRequest
-    next();
+    const user = (req as AuthenticatedRequest).user;
+    res.status(200).json({ message: "Доступ разрешен", user, valid: true });
   } catch (error) {
     res.status(401).json({ message: "Неверный токен", error });
   }
