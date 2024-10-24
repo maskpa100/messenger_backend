@@ -3,6 +3,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/authSecret";
 import { dialogUser } from "../Controllers/WebSocket/dialogUser";
+import { query_MySql } from "../config/MySql";
 
 interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
@@ -89,18 +90,39 @@ export const initWebSocketServer = (port: number) => {
   });
 };
 
-const handleUserMessage = (ws: WebSocketWithAuth, parsedMessage: any) => {
+const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
   if (parsedMessage.userId) {
     const targetWs = connections[parsedMessage.userId];
 
     if (targetWs) {
       const userSettings = targetWs.settings; // Получаем настройки только если целевой пользователь существует
-
+      const userCheckSql =
+        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
+      const dialog_userExists = await query_MySql(userCheckSql, [
+        ws.user?.userId,
+      ]);
+      if (dialog_userExists.length === 0) {
+        console.log({ message: "Пользователь не найден" });
+      }
+      const message = {
+        dialog_userId: ws.user?.userId,
+        dialog_user: dialog_userExists,
+        messages: [
+          {
+            id: 30,
+            time: "2024-10-23T18:07:44.000Z",
+            from_user: 4,
+            to_user: 5,
+            message: "как дела ",
+            delivered: false,
+          },
+        ], // тут новые данные
+      };
       // Отправляем сообщение нужному пользователю
       targetWs.send(
         JSON.stringify({
           type: "message", // Тип сообщения, может быть полезным для обработки
-          content: `Сообщение для вас от пользователя ${ws.user?.userId}: ${parsedMessage.content}`,
+          content: `От пользователя ${ws.user?.userId}  Пользвателю ${parsedMessage.userId} Сообшения : ${parsedMessage.content}`,
         })
       );
     } else {
