@@ -106,7 +106,7 @@ export const verifyToken = (
     const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
     (req as AuthenticatedRequest).user = decoded; // Приведение к типу AuthenticatedRequest
     const user = (req as AuthenticatedRequest).user;
-    res.status(200).json({ message: "Доступ разрешен", user, valid: true });
+    next();
   } catch (error) {
     res.status(401).json({ message: "Неверный токен", error });
   }

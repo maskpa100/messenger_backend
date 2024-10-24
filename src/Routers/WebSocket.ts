@@ -2,12 +2,14 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/authSecret";
+import { dialogUser } from "../Controllers/WebSocket/dialogUser";
 
 interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
   settings?: {
     page?: string;
-    // Вы можете добавить другие параметры, если нужно
+    dialog_user?: string;
+    userId?: string;
   };
 }
 
@@ -45,21 +47,19 @@ export const initWebSocketServer = (port: number) => {
       ws.send(JSON.stringify(decoded));
 
       // Ожидание настроек пользователя
-      ws.on("message", (message) => {
+      ws.on("message", async (message) => {
         try {
           const parsedMessage = JSON.parse(message.toString());
           if (parsedMessage.type === "settings") {
             connections[ws.user?.userId].settings = parsedMessage.settings;
-            // Сохраните настройки пользователя для дальнейшего использования
-            console.log(
-              `Настройки пользователя ${ws.user?.userId}:`,
-              parsedMessage.settings
-            );
-            ws.send(
-              JSON.stringify({
-                message: `Настройки пользователя ${parsedMessage.settings.page}`,
-              })
-            );
+            if (parsedMessage.settings.page === "dialogues") {
+              const result = await dialogUser(
+                decoded.userId,
+                parsedMessage.settings.dialog_user
+              );
+              ws.send(JSON.stringify({ result }));
+            }
+
             // Здесь вы можете реализовать логику для обработки этих настроек
           } else {
             // Обработка других сообщений

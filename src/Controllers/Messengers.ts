@@ -46,13 +46,21 @@ export const inboxMessengers = async (req: Request, res: Response) => {
         res.status(400).json({ message: "Поля dialog_user обязательно" });
         return;
       }
-      const userCheckSql = "SELECT * FROM users WHERE id = ?";
-      const userExists = await query_MySql(userCheckSql, [dialog_user]);
+      const userCheckSql =
+        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
+      const userExists = await query_MySql(userCheckSql, [userId]);
 
       if (userExists.length === 0) {
         res.status(404).json({ message: "Пользователь не найден" });
         return;
       }
+
+      const dialog_userExists = await query_MySql(userCheckSql, [dialog_user]);
+      if (dialog_userExists.length === 0) {
+        res.status(404).json({ message: "Пользователь не найден" });
+        return;
+      }
+
       const sql =
         "SELECT * FROM messengers WHERE from_user IN (?, ?) OR to_user IN (?, ?)";
       const messages = await query_MySql(sql, [
@@ -63,7 +71,8 @@ export const inboxMessengers = async (req: Request, res: Response) => {
       ]);
       res.status(200).json({
         messages: messages,
-        user: user,
+        user: userExists,
+        dialog_user: dialog_userExists,
       });
       return;
     } catch (error) {
@@ -72,4 +81,10 @@ export const inboxMessengers = async (req: Request, res: Response) => {
         .json({ message: "Ошибка при получении сообщений", error });
     }
   }
+};
+
+export const getDialogues = async (req: Request, res: Response) => {
+  const user = (req as AuthenticatedRequest).user;
+
+  res.status(200).json({ user: user });
 };
