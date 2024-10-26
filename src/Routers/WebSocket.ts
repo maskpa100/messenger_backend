@@ -8,8 +8,8 @@ import { getMessage, insertMessage } from "../query_MySql";
 
 interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
-  settings?: {
-    page?: string;
+  request?: {
+    action?: string;
     dialog_user?: string;
     userId?: string;
   };
@@ -54,25 +54,23 @@ export const initWebSocketServer = (port: number) => {
           const parsedMessage = JSON.parse(message.toString());
           const userId = ws.user?.userId;
           if (userId && connections[userId]) {
-            connections[userId].settings = parsedMessage.settings;
+            connections[userId].request = parsedMessage.request;
           } else {
             console.error("Соединение не найдено для userId:", userId);
           }
-          connections[ws.user?.userId].settings = parsedMessage.settings;
+          connections[ws.user?.userId].request = parsedMessage.request;
 
-          if (parsedMessage.type === "settings") {
-            if (parsedMessage.settings.page === "dialogues") {
+          if (parsedMessage.type === "request") {
+            if (parsedMessage.request.action === "dialogue") {
               const result = await dialogUser(
                 decoded.userId,
-                parsedMessage.settings.dialog_user
+                parsedMessage.request.dialog_user
               );
               ws.send(JSON.stringify({ result }));
             }
-
-            // Здесь вы можете реализовать логику для обработки этих настроек
-          } else {
-            // Обработка других сообщений
-            handleUserMessage(ws, parsedMessage);
+            if (parsedMessage.request.action === "addMessage") {
+              handleUserMessage(ws, parsedMessage);
+            }
           }
         } catch (error) {
           console.error("Ошибка парсинга сообщения:", error);
@@ -100,11 +98,11 @@ export const initWebSocketServer = (port: number) => {
 };
 
 const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
-  if (parsedMessage.userId) {
-    const targetWs = connections[parsedMessage.userId];
+  if (parsedMessage.request.userId) {
+    const targetWs = connections[parsedMessage.request.userId];
 
     if (targetWs) {
-      const userSettings = targetWs.settings; // Получаем настройки только если целевой пользователь существует
+      const userSettings = targetWs.request; // Получаем настройки только если целевой пользователь существует
       const userCheckSql =
         "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
       const dialog_userExists = await query_MySql(userCheckSql, [
@@ -115,8 +113,8 @@ const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
       }
       const result = await insertMessage(
         ws.user?.userId,
-        parsedMessage.userId,
-        parsedMessage.content
+        parsedMessage.request.userId,
+        parsedMessage.request.content
       );
       console.log(result.insertId);
       const resultMessage = await getMessage(result.insertId);

@@ -22,12 +22,12 @@ export const dialogUser = async (userId: number, dialog_user: number) => {
     }
 
     const sql =
-      "SELECT * FROM messengers WHERE from_user IN (?, ?) OR to_user IN (?, ?)";
+      "SELECT * FROM messengers WHERE (from_user, to_user) IN ((?, ?), (?, ?))";
     const messages = await query_MySql(sql, [
       userId,
       dialog_user,
-      userId,
       dialog_user,
+      userId,
     ]);
 
     return {
