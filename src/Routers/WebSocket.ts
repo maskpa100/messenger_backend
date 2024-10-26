@@ -128,8 +128,20 @@ const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
       // Отправляем сообщение нужному пользователю
       targetWs.send(
         JSON.stringify({
-          type: "message", // Тип сообщения, может быть полезным для обработки
+          type: "message",
           content: message,
+        })
+      );
+      // отправить себе
+      const message2 = {
+        dialog_userId: dialog_userExists,
+        dialog_user: ws.user?.userId,
+        messages: resultMessage,
+      };
+      ws.send(
+        JSON.stringify({
+          type: "message",
+          content: message2,
         })
       );
     } else {

@@ -48,7 +48,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     );
 
     // Отправляем ответ с токеном
-    res.status(200).json({ message: "Успешный вход", token });
+    res.status(200).json({
+      message: "Успешный вход",
+      token,
+      user: {
+        userId: user.id,
+        username: user.email,
+      },
+    });
   } catch (error) {
     // В случае ошибки отправляем ответ с кодом 500
     res.status(500).json({ message: "Ошибка сервера", error });
