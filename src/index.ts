@@ -6,7 +6,7 @@ import authRouter from "./Routers/auth";
 import messengersRouter from "./Routers/messengers";
 import userRouter from "./Routers/user";
 import { SECRET_KEY } from "./config/authSecret";
-import { initWebSocketServer } from "./Routers/websocket";
+import { initWebSocketServer } from "./Routers/WebSocket";
 
 const app = express();
 const port = 5000;

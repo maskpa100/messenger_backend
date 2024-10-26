@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/authSecret";
 import { dialogUser } from "../Controllers/WebSocket/dialogUser";
 import { query_MySql } from "../config/MySql";
+import { getMessage, insertMessage } from "../query_MySql";
 
 interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
@@ -51,8 +52,8 @@ export const initWebSocketServer = (port: number) => {
       ws.on("message", async (message) => {
         try {
           const parsedMessage = JSON.parse(message.toString());
+          connections[ws.user?.userId].settings = parsedMessage.settings;
           if (parsedMessage.type === "settings") {
-            connections[ws.user?.userId].settings = parsedMessage.settings;
             if (parsedMessage.settings.page === "dialogues") {
               const result = await dialogUser(
                 decoded.userId,
@@ -73,6 +74,7 @@ export const initWebSocketServer = (port: number) => {
               message:
                 "Ошибка: не удалось распарсить сообщение. Убедитесь, что оно в формате JSON.",
               parsedMessage: message.toString(),
+              user: `-- ${connections[ws.user?.userId]}`,
             })
           );
         }
@@ -104,25 +106,25 @@ const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
       if (dialog_userExists.length === 0) {
         console.log({ message: "Пользователь не найден" });
       }
+      const result = await insertMessage(
+        ws.user?.userId,
+        parsedMessage.userId,
+        parsedMessage.content
+      );
+      console.log(result.insertId);
+      const resultMessage = await getMessage(result.insertId);
+      console.log();
+
       const message = {
         dialog_userId: ws.user?.userId,
         dialog_user: dialog_userExists,
-        messages: [
-          {
-            id: 30,
-            time: "2024-10-23T18:07:44.000Z",
-            from_user: 4,
-            to_user: 5,
-            message: "как дела ",
-            delivered: false,
-          },
-        ], // тут новые данные
+        messages: resultMessage, // тут новые данные
       };
       // Отправляем сообщение нужному пользователю
       targetWs.send(
         JSON.stringify({
           type: "message", // Тип сообщения, может быть полезным для обработки
-          content: `От пользователя ${ws.user?.userId}  Пользвателю ${parsedMessage.userId} Сообшения : ${parsedMessage.content}`,
+          content: message,
         })
       );
     } else {
