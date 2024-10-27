@@ -6,6 +6,7 @@ import { dialogUser } from "../Controllers/WebSocket/dialogUser";
 import { query_MySql } from "../config/MySql";
 import { getMessage, insertMessage } from "../query_MySql";
 import { handleUserMessage } from "../Controllers/WebSocket/handleUserMessage";
+import { unreadMessages } from "../Controllers/WebSocket/dialogues";
 
 export interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
@@ -71,6 +72,10 @@ export const initWebSocketServer = (port: number) => {
             }
             if (parsedMessage.request.action === "addMessage") {
               handleUserMessage(ws, parsedMessage, connections);
+            }
+            if (parsedMessage.request.action === "dialogues") {
+              const result = unreadMessages(decoded.userId);
+              ws.send(JSON.stringify({ result }));
             }
           }
         } catch (error) {
