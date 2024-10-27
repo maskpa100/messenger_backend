@@ -74,7 +74,7 @@ export const initWebSocketServer = (port: number) => {
               handleUserMessage(ws, parsedMessage, connections);
             }
             if (parsedMessage.request.action === "dialogues") {
-              const result = unreadMessages(decoded.userId);
+              const result = await unreadMessages(decoded.userId);
               ws.send(JSON.stringify({ result }));
             }
           }

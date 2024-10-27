@@ -57,3 +57,14 @@ export const recentMessages = async (userId: number) => {
   const result = await query_MySql(recentMessages, [userId, userId]);
   return result;
 };
+
+export const getUsers = async (userIds: number[]) => {
+  const placeholders = userIds.map(() => "?").join(", ");
+
+  const selectUsersSql = `
+    SELECT * FROM users 
+    WHERE id IN (${placeholders})
+  `;
+  const result = await query_MySql(selectUsersSql, userIds);
+  return result;
+};
