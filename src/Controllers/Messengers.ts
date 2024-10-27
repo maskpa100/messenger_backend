@@ -2,6 +2,9 @@ import { JwtPayload } from "jsonwebtoken";
 import { query_MySql } from "../config/MySql";
 import { AuthenticatedRequest } from "../types";
 import { Request, Response } from "express";
+import { getUnreadMessages, recentMessages } from "../query_MySql";
+import { groupMessages } from "../utils/groupMessages";
+import { mergeMessages } from "../utils/mergeMessages";
 
 export const sendMessengers = async (req: Request, res: Response) => {
   const user = (req as AuthenticatedRequest).user;
@@ -87,4 +90,21 @@ export const getDialogues = async (req: Request, res: Response) => {
   const user = (req as AuthenticatedRequest).user;
 
   res.status(200).json({ user: user });
+};
+
+export const unreadMessages = async (req: Request, res: Response) => {
+  const userId = 4;
+  const resultUnreadMessages = await getUnreadMessages(userId);
+  const resultRecentMessages = await recentMessages(userId);
+  const data = {
+    user: String(userId),
+    messages: resultRecentMessages,
+  };
+  const resultGroupMessages = groupMessages(data);
+  const resultMergeMessages = mergeMessages(
+    resultGroupMessages,
+    resultUnreadMessages,
+    userId
+  );
+  res.status(200).json({ user: "4", messages: resultMergeMessages });
 };

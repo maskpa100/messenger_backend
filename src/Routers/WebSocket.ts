@@ -5,8 +5,9 @@ import { SECRET_KEY } from "../config/authSecret";
 import { dialogUser } from "../Controllers/WebSocket/dialogUser";
 import { query_MySql } from "../config/MySql";
 import { getMessage, insertMessage } from "../query_MySql";
+import { handleUserMessage } from "../Controllers/WebSocket/handleUserMessage";
 
-interface WebSocketWithAuth extends WebSocket {
+export interface WebSocketWithAuth extends WebSocket {
   user?: JwtPayload;
   request?: {
     action?: string;
@@ -69,7 +70,7 @@ export const initWebSocketServer = (port: number) => {
               ws.send(JSON.stringify({ result }));
             }
             if (parsedMessage.request.action === "addMessage") {
-              handleUserMessage(ws, parsedMessage);
+              handleUserMessage(ws, parsedMessage, connections);
             }
           }
         } catch (error) {
@@ -79,7 +80,7 @@ export const initWebSocketServer = (port: number) => {
               message:
                 "Ошибка: не удалось распарсить сообщение. Убедитесь, что оно в формате JSON.",
               parsedMessage: message.toString(),
-              user: `-- ${connections[ws.user?.userId]}`,
+              user: `user: ${connections[ws.user?.userId]}`,
             })
           );
         }
@@ -95,71 +96,4 @@ export const initWebSocketServer = (port: number) => {
       }
     });
   });
-};
-
-const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
-  if (parsedMessage.request.userId) {
-    const targetWs = connections[parsedMessage.request.userId];
-
-    if (targetWs) {
-      const userSettings = targetWs.request; // Получаем настройки только если целевой пользователь существует
-      const userCheckSql =
-        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-      const dialog_userExists = await query_MySql(userCheckSql, [
-        ws.user?.userId,
-      ]);
-      if (dialog_userExists.length === 0) {
-        console.log({ message: "Пользователь не найден" });
-      }
-      const userCheckSql2 =
-        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-      const dialog_userExists2 = await query_MySql(userCheckSql, [
-        parsedMessage.request.userId,
-      ]);
-      if (dialog_userExists.length === 0) {
-        console.log({ message: "Пользователь не найден" });
-      }
-      const result = await insertMessage(
-        ws.user?.userId,
-        parsedMessage.request.userId,
-        parsedMessage.request.content
-      );
-      console.log(result.insertId);
-      const resultMessage = await getMessage(result.insertId);
-      console.log();
-
-      const message = {
-        dialog_userId: ws.user?.userId,
-        dialog_user: dialog_userExists,
-        messages: resultMessage, // тут новые данные
-      };
-      // Отправляем сообщение нужному пользователю
-      targetWs.send(
-        JSON.stringify({
-          type: "message",
-          content: message,
-        })
-      );
-      // отправить себе
-      const message2 = {
-        dialog_userId: parsedMessage.request.userId,
-        dialog_user: dialog_userExists2,
-        messages: resultMessage,
-        userId: ws.user?.userId,
-      };
-      ws.send(
-        JSON.stringify({
-          type: "message",
-          content: message2,
-        })
-      );
-    } else {
-      // Если пользователь не в сети, отправляем соответствующее сообщение
-      ws.send(
-        JSON.stringify({ message: "Пользователь не в сети или не существует" })
-      );
-    }
-  } else {
-    ws.send("Сообщение не содержит userId");
-  }
 };
