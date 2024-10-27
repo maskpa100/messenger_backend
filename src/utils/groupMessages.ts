@@ -12,6 +12,8 @@ type DialogMessage = {
   dialog_user: number;
   messages: {
     id: number;
+    from_user: number;
+    to_user: number;
     time: string;
     message: string;
     delivered: number;
@@ -37,7 +39,14 @@ export function groupMessages(data: {
         };
       }
 
-      dialogs[dialogUser].messages.push({ id, time, message, delivered });
+      dialogs[dialogUser].messages.push({
+        id,
+        time,
+        from_user,
+        to_user,
+        message,
+        delivered,
+      });
     }
   );
 

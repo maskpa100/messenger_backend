@@ -12,6 +12,8 @@ type DialogMessage = {
   dialog_user: number;
   messages: {
     id: number;
+    from_user: number;
+    to_user: number;
     time: string;
     message: string;
     delivered: number;
@@ -50,7 +52,14 @@ export function mergeMessages(
       );
       if (!existingMessage) {
         // Добавляем сообщение, если его еще нет
-        dialogsMap[dialogUser].messages.push({ id, time, message, delivered });
+        dialogsMap[dialogUser].messages.push({
+          id,
+          time,
+          from_user,
+          to_user,
+          message,
+          delivered,
+        });
       }
     }
   );
