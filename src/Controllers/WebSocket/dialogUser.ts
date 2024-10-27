@@ -34,6 +34,7 @@ export const dialogUser = async (userId: number, dialog_user: number) => {
       messages: messages,
       user: userExists,
       dialog_user: dialog_userExists,
+      userId: userId,
     };
   } catch (error) {
     return { message: "Ошибка при получении сообщений", error };

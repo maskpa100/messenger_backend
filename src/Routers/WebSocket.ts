@@ -111,6 +111,14 @@ const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
       if (dialog_userExists.length === 0) {
         console.log({ message: "Пользователь не найден" });
       }
+      const userCheckSql2 =
+        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
+      const dialog_userExists2 = await query_MySql(userCheckSql, [
+        parsedMessage.request.userId,
+      ]);
+      if (dialog_userExists.length === 0) {
+        console.log({ message: "Пользователь не найден" });
+      }
       const result = await insertMessage(
         ws.user?.userId,
         parsedMessage.request.userId,
@@ -134,9 +142,10 @@ const handleUserMessage = async (ws: WebSocketWithAuth, parsedMessage: any) => {
       );
       // отправить себе
       const message2 = {
-        dialog_userId: dialog_userExists,
-        dialog_user: ws.user?.userId,
+        dialog_userId: parsedMessage.request.userId,
+        dialog_user: dialog_userExists2,
         messages: resultMessage,
+        userId: ws.user?.userId,
       };
       ws.send(
         JSON.stringify({
