@@ -1,6 +1,6 @@
 type MessageData = {
   userId: number;
-  dialog_user: number;
+  dialog_userId: number;
   messages: Array<{
     id: number;
     time: string;
@@ -15,7 +15,7 @@ export function getUniqueUserIds(
 ): number[] {
   // Извлекаем все userId и dialog_user в один массив
   const userIds = data
-    .map((item: any) => [item.userId, item.dialog_user])
+    .map((item: any) => [item.userId, item.dialog_userId])
     .flat();
 
   // Убираем дубликаты, исключаем указанный userId, и возвращаем результат

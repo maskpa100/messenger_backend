@@ -9,7 +9,7 @@ type Message = {
 
 type DialogMessage = {
   userId: number;
-  dialog_user: number;
+  dialog_userId: number;
   messages: {
     id: number;
     from_user: number;
@@ -29,7 +29,7 @@ export function mergeMessages(
 
   // Создаем структуру из существующих диалогов для удобного доступа
   existingDialogs.forEach((dialog) => {
-    dialogsMap[dialog.dialog_user] = dialog;
+    dialogsMap[dialog.dialog_userId] = dialog;
   });
 
   // Обрабатываем новые сообщения
@@ -41,7 +41,7 @@ export function mergeMessages(
       if (!dialogsMap[dialogUser]) {
         dialogsMap[dialogUser] = {
           userId,
-          dialog_user: dialogUser,
+          dialog_userId: dialogUser,
           messages: [],
         };
       }

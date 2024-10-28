@@ -7,7 +7,7 @@ export const unreadMessages = async (userId: number) => {
   const resultRecentMessages = await recentMessages(userId);
 
   const data = {
-    user: String(userId),
+    userId: String(userId),
     messages: resultRecentMessages,
   };
 

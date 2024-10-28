@@ -98,7 +98,7 @@ export const unreadMessages = async (req: Request, res: Response) => {
   const resultUnreadMessages = await getUnreadMessages(userId);
   const resultRecentMessages = await recentMessages(userId);
   const data = {
-    user: String(userId),
+    userId: String(userId),
     messages: resultRecentMessages,
   };
   const resultGroupMessages = groupMessages(data);
@@ -111,7 +111,7 @@ export const unreadMessages = async (req: Request, res: Response) => {
   const users = await getUsers(userIds);
   const result = resultMergeMessages.map((dialog) => {
     const user = users.find(
-      (user) => user.id === dialog.dialog_user || user.id === dialog.userId
+      (user) => user.id === dialog.dialog_userId || user.id === dialog.userId
     );
     return { ...dialog, user: user || null };
   });

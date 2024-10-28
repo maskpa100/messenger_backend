@@ -9,7 +9,7 @@ type Message = {
 
 type DialogMessage = {
   userId: number;
-  dialog_user: number;
+  dialog_userId: number;
   messages: {
     id: number;
     from_user: number;
@@ -21,10 +21,10 @@ type DialogMessage = {
 };
 
 export function groupMessages(data: {
-  user: string;
+  userId: string;
   messages: Message[];
 }): DialogMessage[] {
-  const userId = parseInt(data.user, 10);
+  const userId = parseInt(data.userId, 10);
   const dialogs: { [key: number]: DialogMessage } = {};
 
   data.messages.forEach(
@@ -34,7 +34,7 @@ export function groupMessages(data: {
       if (!dialogs[dialogUser]) {
         dialogs[dialogUser] = {
           userId,
-          dialog_user: dialogUser,
+          dialog_userId: dialogUser,
           messages: [],
         };
       }
