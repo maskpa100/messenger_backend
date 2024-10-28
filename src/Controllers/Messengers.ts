@@ -113,14 +113,14 @@ export const unreadMessages = async (req: Request, res: Response) => {
     const user = users.find(
       (user) => user.id === dialog.dialog_userId || user.id === dialog.userId
     );
-    return { ...dialog, user: user || null };
+    return { ...dialog, dialog_user: user || null };
   });
   res.status(200).json({
-    resultUnreadMessages: resultRecentMessages,
-    user: userId,
-    messages: resultMergeMessages,
-    UserIds: userIds,
-    users: users,
+    //resultUnreadMessages: resultRecentMessages,
+    //user: userId,
+    //messages: resultMergeMessages,
+    //UserIds: userIds,
+    //users: users,
     result: result,
   });
 };
