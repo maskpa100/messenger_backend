@@ -13,6 +13,7 @@ interface User {
   id: number;
   email: string;
   password: string;
+  avatar: string;
 }
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -54,6 +55,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       user: {
         userId: user.id,
         username: user.email,
+        avatar: user.avatar,
       },
     });
   } catch (error) {

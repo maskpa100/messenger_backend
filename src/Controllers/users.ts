@@ -29,3 +29,16 @@ export const getUsersById = async (req: Request, res: Response) => {
       .json({ message: "Ошибка при получении пользователей", error: error });
   }
 };
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const getAllUsersSql = "SELECT id, family, name, avatar FROM users";
+    const allUsers = await query_MySql(getAllUsersSql);
+
+    res.status(200).json(allUsers);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Ошибка при получении пользователей", error: error });
+  }
+};

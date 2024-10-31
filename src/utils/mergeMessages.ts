@@ -63,7 +63,9 @@ export function mergeMessages(
       }
     }
   );
-
+  Object.values(dialogsMap).forEach((dialog) => {
+    dialog.messages.sort((a, b) => a.id - b.id);
+  });
   // Возвращаем массив из значений dialogsMap
   return Object.values(dialogsMap);
 }
