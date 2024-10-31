@@ -9,32 +9,32 @@ export const handleUserMessage = async (
 ) => {
   if (parsedMessage.request.userId) {
     const targetWs = connections[parsedMessage.request.userId];
-
+    const result = await insertMessage(
+      ws.user?.userId,
+      parsedMessage.request.userId,
+      parsedMessage.request.content
+    );
+    const userCheckSql =
+      "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
+    const dialog_userExists = await query_MySql(userCheckSql, [
+      ws.user?.userId,
+    ]);
+    if (dialog_userExists.length === 0) {
+      console.log({ message: "Пользователь не найден" });
+    }
+    const userCheckSql2 =
+      "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
+    const dialog_userExists2 = await query_MySql(userCheckSql, [
+      parsedMessage.request.userId,
+    ]);
+    if (dialog_userExists.length === 0) {
+      console.log({ message: "Пользователь не найден" });
+    }
+    const resultMessage = await getMessage(result.insertId);
     if (targetWs) {
-      const userSettings = targetWs.request; // Получаем настройки только если целевой пользователь существует
-      const userCheckSql =
-        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-      const dialog_userExists = await query_MySql(userCheckSql, [
-        ws.user?.userId,
-      ]);
-      if (dialog_userExists.length === 0) {
-        console.log({ message: "Пользователь не найден" });
-      }
-      const userCheckSql2 =
-        "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-      const dialog_userExists2 = await query_MySql(userCheckSql, [
-        parsedMessage.request.userId,
-      ]);
-      if (dialog_userExists.length === 0) {
-        console.log({ message: "Пользователь не найден" });
-      }
-      const result = await insertMessage(
-        ws.user?.userId,
-        parsedMessage.request.userId,
-        parsedMessage.request.content
-      );
+      const userSettings = targetWs.request;
+
       console.log(result.insertId);
-      const resultMessage = await getMessage(result.insertId);
 
       const message = {
         dialog_userId: ws.user?.userId,
@@ -62,9 +62,17 @@ export const handleUserMessage = async (
         })
       );
     } else {
-      // Если пользователь не в сети, отправляем соответствующее сообщение
+      const message2 = {
+        dialog_userId: parsedMessage.request.userId,
+        dialog_user: dialog_userExists2,
+        messages: resultMessage,
+        userId: ws.user?.userId,
+      };
       ws.send(
-        JSON.stringify({ message: "Пользователь не в сети или не существует" })
+        JSON.stringify({
+          type: "message",
+          content: message2,
+        })
       );
     }
   } else {
