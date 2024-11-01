@@ -65,13 +65,22 @@ export const getDialogMessages = async (
   userId: number,
   dialogUser: number
 ): Promise<Messengers[]> => {
-  const sql =
+  const selectSql =
     "SELECT * FROM messengers WHERE (from_user, to_user) IN ((?, ?), (?, ?))";
-  const result = await query_MySql(sql, [
+  const updateSql =
+    "UPDATE messengers SET delivered = 1 WHERE from_user = ? AND to_user = ? AND delivered = 0";
+
+  // обновляем статус сообщений
+  await query_MySql(updateSql, [dialogUser, userId]);
+
+  // получаем сообщения
+  const result = await query_MySql(selectSql, [
     userId,
     dialogUser,
     dialogUser,
     userId,
   ]);
+  console.log(result);
+
   return result as Messengers[];
 };

@@ -10,11 +10,6 @@ export const handleUserMessage = async (
 ) => {
   if (parsedMessage.request.userId) {
     const targetWs = connections[parsedMessage.request.userId];
-    const result = await insertMessage(
-      ws.user?.userId,
-      parsedMessage.request.userId,
-      parsedMessage.request.content
-    );
 
     const dialog_userExists = await getUserById(ws.user?.userId);
     if (!dialog_userExists) {
@@ -25,12 +20,15 @@ export const handleUserMessage = async (
     if (!dialog_userExists2) {
       return { message: "Пользователь не найден" };
     }
-
+    const result = await insertMessage(
+      ws.user?.userId,
+      parsedMessage.request.userId,
+      parsedMessage.request.content
+    );
     const resultMessage = await getMessage(result.insertId);
     if (targetWs) {
+      // проверяем подключен ли пользователь
       const userSettings = targetWs.request;
-
-      console.log(result.insertId);
 
       const message = {
         dialog_userId: ws.user?.userId,

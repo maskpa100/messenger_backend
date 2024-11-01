@@ -21,7 +21,7 @@ export const dialogUser = async (userId: number, dialog_user: number) => {
       return { message: "Пользователь не найден" };
     }
 
-    const messages = getDialogMessages(userId, dialog_user);
+    const messages = await getDialogMessages(userId, dialog_user);
 
     return {
       messages: messages,
