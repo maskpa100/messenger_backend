@@ -55,11 +55,13 @@ export const initWebSocketServer = (port: number) => {
         try {
           const parsedMessage = JSON.parse(message.toString());
           const userId = ws.user?.userId;
+          /* // Последний запрос 
           if (userId && connections[userId]) {
             connections[userId].request = parsedMessage.request;
           } else {
             console.error("Соединение не найдено для userId:", userId);
           }
+            */
           connections[ws.user?.userId].request = parsedMessage.request;
 
           if (parsedMessage.type === "request") {
