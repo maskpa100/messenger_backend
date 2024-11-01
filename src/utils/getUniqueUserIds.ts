@@ -3,9 +3,9 @@ type MessageData = {
   dialog_userId: number;
   messages: Array<{
     id: number;
-    time: string;
+    time: Date;
     message: string;
-    delivered: number;
+    delivered: boolean;
   }>;
 };
 

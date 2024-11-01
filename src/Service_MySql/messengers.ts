@@ -1,5 +1,6 @@
 import { ResultSetHeader } from "mysql2";
-import { query_MySql } from "./config/MySql";
+import { query_MySql } from "../config/MySql";
+import { Messengers } from "./Types";
 
 export const insertMessage = async (
   fromUserId: number,
@@ -11,20 +12,22 @@ export const insertMessage = async (
   VALUES (?, ?, ?)
 `;
   const result = await query_MySql<ResultSetHeader>(insertMessageSql, [
-    fromUserId, // ID отправителя
+    fromUserId,
     toUserId, // ID получателя
-    message, // текст сообщения
+    message,
   ]);
   return result as unknown as ResultSetHeader;
 };
 
-export async function getMessage(id: number) {
+export async function getMessage(id: number): Promise<Messengers[]> {
   const query = "SELECT * FROM messengers WHERE id = ?";
-  const results = await query_MySql(query, [id]);
-  return results;
+  const result = await query_MySql(query, [id]);
+  return result as Messengers[];
 }
 
-export const getUnreadMessages = async (userId: number) => {
+export const getUnreadMessages = async (
+  userId: number
+): Promise<Messengers[]> => {
   const unreadMessages = `SELECT m1.*
     FROM messengers m1
     JOIN (
@@ -38,9 +41,9 @@ export const getUnreadMessages = async (userId: number) => {
     WHERE m1.delivered = false
     ORDER BY m1.time DESC;`;
   const result = await query_MySql(unreadMessages, [userId, userId]);
-  return result;
+  return result as Messengers[];
 };
-export const recentMessages = async (userId: number) => {
+export const recentMessages = async (userId: number): Promise<Messengers[]> => {
   const recentMessages = `SELECT m1.*
     FROM messengers m1
     JOIN (
@@ -55,13 +58,20 @@ export const recentMessages = async (userId: number) => {
             m1.time = m2.last_time)
     ORDER BY m1.time DESC`;
   const result = await query_MySql(recentMessages, [userId, userId]);
-  return result;
+  return result as Messengers[];
 };
 
-export const getUsers = async (userIds: number[]) => {
-  const placeholders = userIds.map(() => "?").join(", ");
-
-  const selectUsersSql = `SELECT id, email, family, name, avatar, time FROM users WHERE id IN (${placeholders})`;
-  const result = await query_MySql(selectUsersSql, userIds);
-  return result;
+export const getDialogMessages = async (
+  userId: number,
+  dialogUser: number
+): Promise<Messengers[]> => {
+  const sql =
+    "SELECT * FROM messengers WHERE (from_user, to_user) IN ((?, ?), (?, ?))";
+  const result = await query_MySql(sql, [
+    userId,
+    dialogUser,
+    dialogUser,
+    userId,
+  ]);
+  return result as Messengers[];
 };

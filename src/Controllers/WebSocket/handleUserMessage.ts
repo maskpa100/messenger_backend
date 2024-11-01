@@ -1,6 +1,7 @@
 import { query_MySql } from "../../config/MySql";
-import { getMessage, insertMessage } from "../../query_MySql";
+import { getMessage, insertMessage } from "../../Service_MySql/messengers";
 import { WebSocketWithAuth } from "../../Routers/WebSocket";
+import { getUserById } from "../../Service_MySql/users";
 
 export const handleUserMessage = async (
   ws: WebSocketWithAuth,
@@ -14,22 +15,17 @@ export const handleUserMessage = async (
       parsedMessage.request.userId,
       parsedMessage.request.content
     );
-    const userCheckSql =
-      "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-    const dialog_userExists = await query_MySql(userCheckSql, [
-      ws.user?.userId,
-    ]);
-    if (dialog_userExists.length === 0) {
-      console.log({ message: "Пользователь не найден" });
+
+    const dialog_userExists = await getUserById(ws.user?.userId);
+    if (!dialog_userExists) {
+      return { message: "Пользователь не найден" };
     }
-    const userCheckSql2 =
-      "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-    const dialog_userExists2 = await query_MySql(userCheckSql, [
-      parsedMessage.request.userId,
-    ]);
-    if (dialog_userExists.length === 0) {
-      console.log({ message: "Пользователь не найден" });
+
+    const dialog_userExists2 = await getUserById(parsedMessage.request.userId);
+    if (!dialog_userExists2) {
+      return { message: "Пользователь не найден" };
     }
+
     const resultMessage = await getMessage(result.insertId);
     if (targetWs) {
       const userSettings = targetWs.request;

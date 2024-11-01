@@ -2,10 +2,11 @@ import { JwtPayload } from "jsonwebtoken";
 import { query_MySql } from "../config/MySql";
 import { AuthenticatedRequest } from "../types";
 import { Request, Response } from "express";
-import { getUnreadMessages, getUsers, recentMessages } from "../query_MySql";
+import { getUnreadMessages, recentMessages } from "../Service_MySql/messengers";
 import { groupMessages } from "../utils/groupMessages";
 import { mergeMessages } from "../utils/mergeMessages";
 import { getUniqueUserIds } from "../utils/getUniqueUserIds";
+import { getUsers } from "../Service_MySql/users";
 
 export const sendMessengers = async (req: Request, res: Response) => {
   const user = (req as AuthenticatedRequest).user;
@@ -116,11 +117,6 @@ export const unreadMessages = async (req: Request, res: Response) => {
     return { ...dialog, dialog_user: user || null };
   });
   res.status(200).json({
-    //resultUnreadMessages: resultRecentMessages,
-    //user: userId,
-    //messages: resultMergeMessages,
-    //UserIds: userIds,
-    //users: users,
     result: result,
   });
 };

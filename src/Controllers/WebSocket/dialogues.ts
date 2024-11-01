@@ -1,4 +1,8 @@
-import { getUnreadMessages, getUsers, recentMessages } from "../../query_MySql";
+import {
+  getUnreadMessages,
+  recentMessages,
+} from "../../Service_MySql/messengers";
+import { getUsers } from "../../Service_MySql/users";
 import { getUniqueUserIds } from "../../utils/getUniqueUserIds";
 import { groupMessages } from "../../utils/groupMessages";
 import { mergeMessages } from "../../utils/mergeMessages";

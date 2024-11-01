@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { SECRET_KEY } from "../config/authSecret";
 import { dialogUser } from "../Controllers/WebSocket/dialogUser";
 import { query_MySql } from "../config/MySql";
-import { getMessage, insertMessage } from "../query_MySql";
+import { getMessage, insertMessage } from "../Service_MySql/messengers";
 import { handleUserMessage } from "../Controllers/WebSocket/handleUserMessage";
 import { unreadMessages } from "../Controllers/WebSocket/dialogues";
 

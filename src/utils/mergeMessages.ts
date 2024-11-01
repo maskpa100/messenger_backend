@@ -1,11 +1,4 @@
-type Message = {
-  id: number;
-  time: string;
-  from_user: number;
-  to_user: number;
-  message: string;
-  delivered: number;
-};
+import { Messengers } from "../Service_MySql/Types";
 
 type DialogMessage = {
   userId: number;
@@ -14,15 +7,15 @@ type DialogMessage = {
     id: number;
     from_user: number;
     to_user: number;
-    time: string;
+    time: Date;
     message: string;
-    delivered: number;
+    delivered: boolean;
   }[];
 };
 
 export function mergeMessages(
   existingDialogs: DialogMessage[],
-  newMessages: Message[],
+  newMessages: Messengers[],
   userId: number
 ): DialogMessage[] {
   const dialogsMap: { [key: number]: DialogMessage } = {};

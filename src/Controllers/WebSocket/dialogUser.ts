@@ -1,4 +1,6 @@
 import { query_MySql } from "../../config/MySql";
+import { getDialogMessages } from "../../Service_MySql/messengers";
+import { getUserById } from "../../Service_MySql/users";
 
 export const dialogUser = async (userId: number, dialog_user: number) => {
   try {
@@ -8,27 +10,18 @@ export const dialogUser = async (userId: number, dialog_user: number) => {
     if (userId === undefined || dialog_user === undefined) {
       return { message: "Параметры userId и dialog_user обязательны" };
     }
-    const userCheckSql =
-      "SELECT id, email, family, name, avatar, time FROM users WHERE id = ?";
-    const userExists = await query_MySql(userCheckSql, [userId]);
 
-    if (userExists.length === 0) {
+    const userExists = await getUserById(userId);
+    if (!userExists) {
       return { message: "Пользователь не найден" };
     }
 
-    const dialog_userExists = await query_MySql(userCheckSql, [dialog_user]);
-    if (dialog_userExists.length === 0) {
+    const dialog_userExists = await getUserById(dialog_user);
+    if (!dialog_userExists) {
       return { message: "Пользователь не найден" };
     }
 
-    const sql =
-      "SELECT * FROM messengers WHERE (from_user, to_user) IN ((?, ?), (?, ?))";
-    const messages = await query_MySql(sql, [
-      userId,
-      dialog_user,
-      dialog_user,
-      userId,
-    ]);
+    const messages = getDialogMessages(userId, dialog_user);
 
     return {
       messages: messages,
