@@ -75,7 +75,7 @@ export const initWebSocketServer = (port: number) => {
               );
             }
             if (parsedMessage.request.action === "delivered") {
-              readMessage(connections, parsedMessage);
+              await readMessage(ws, connections, parsedMessage);
             }
             if (parsedMessage.request.action === "addMessage") {
               handleUserMessage(ws, parsedMessage, connections);

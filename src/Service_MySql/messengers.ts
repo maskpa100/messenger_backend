@@ -84,3 +84,10 @@ export const getDialogMessages = async (
 
   return result as Messengers[];
 };
+export const getReadMessage = async (userId: number, dialogUser: number) => {
+  const updateSql =
+    "UPDATE messengers SET delivered = 1 WHERE from_user = ? AND to_user = ? AND delivered = 0";
+
+  // обновляем статус сообщений
+  await query_MySql(updateSql, [dialogUser, userId]);
+};
