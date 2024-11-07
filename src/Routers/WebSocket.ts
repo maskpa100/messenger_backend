@@ -66,18 +66,19 @@ export const initWebSocketServer = (port: number) => {
 
           if (parsedMessage.type === "request") {
             if (parsedMessage.request.action === "dialogue") {
-              const result = await dialogUser(
+              await dialogUser(
+                ws,
+                connections,
                 decoded.userId,
                 parsedMessage.request.dialog_user
               );
-              ws.send(JSON.stringify({ result }));
             }
             if (parsedMessage.request.action === "addMessage") {
               handleUserMessage(ws, parsedMessage, connections);
             }
             if (parsedMessage.request.action === "dialogues") {
               const result = await unreadMessages(decoded.userId);
-              ws.send(JSON.stringify({ result }));
+              ws.send(JSON.stringify({ type: "dialogues", result }));
             }
           }
         } catch (error) {

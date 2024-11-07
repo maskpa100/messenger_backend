@@ -1,8 +1,16 @@
 import { query_MySql } from "../../config/MySql";
+import { WebSocketWithAuth } from "../../Routers/WebSocket";
 import { getDialogMessages } from "../../Service_MySql/messengers";
 import { getUserById } from "../../Service_MySql/users";
 
-export const dialogUser = async (userId: number, dialog_user: number) => {
+export const dialogUser = async (
+  ws: WebSocketWithAuth,
+  connections: { [key: string]: WebSocketWithAuth },
+  userId: number,
+  dialog_user: number
+) => {
+  const targetWs = connections[dialog_user];
+
   try {
     if (!dialog_user) {
       return { message: "Поля dialog_user обязательно" };
@@ -23,12 +31,25 @@ export const dialogUser = async (userId: number, dialog_user: number) => {
 
     const messages = await getDialogMessages(userId, dialog_user);
 
-    return {
+    const result = {
+      type: "dialogue",
       messages: messages,
       user: userExists,
       dialog_user: dialog_userExists,
       userId: userId,
     };
+
+    ws.send(JSON.stringify({ result }));
+    if (targetWs) {
+      targetWs.send(
+        JSON.stringify({
+          type: "delivered",
+          result: {
+            dialog_user: userId,
+          },
+        })
+      );
+    }
   } catch (error) {
     return { message: "Ошибка при получении сообщений", error };
   }
