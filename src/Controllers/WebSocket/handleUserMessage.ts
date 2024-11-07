@@ -38,7 +38,7 @@ export const handleUserMessage = async (
       // Отправляем сообщение нужному пользователю
       targetWs.send(
         JSON.stringify({
-          type: "message",
+          type: "NewMessage",
           content: message,
         })
       );
@@ -51,7 +51,7 @@ export const handleUserMessage = async (
       };
       ws.send(
         JSON.stringify({
-          type: "message",
+          type: "NewMessage",
           content: message2,
         })
       );
@@ -64,7 +64,7 @@ export const handleUserMessage = async (
       };
       ws.send(
         JSON.stringify({
-          type: "message",
+          type: "NewMessage",
           content: message2,
         })
       );
