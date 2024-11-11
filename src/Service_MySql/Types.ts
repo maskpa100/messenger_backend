@@ -13,5 +13,6 @@ export type User = {
   family: string | null;
   name: string | null;
   avatar: string | null;
+  city: string | null;
   time: Date | null;
 };

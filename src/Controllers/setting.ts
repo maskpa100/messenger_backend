@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { AuthenticatedRequest } from "../types";
 import { JwtPayload } from "jsonwebtoken";
 import { updateUser } from "../Service_MySql/setting";
+import { getUser } from "../Service_MySql/users";
+import { deleteAvatar } from "../utils/deleteAvatar";
 const fs = require("fs");
 const path = require("path");
 
@@ -10,7 +12,6 @@ export const updateProfile = async (req: Request, res: Response) => {
   if (user && typeof user !== "string") {
     const { userId } = user as JwtPayload;
     const id: number = Number(userId);
-    console.log(id);
 
     try {
       // console.log(req.body);
@@ -47,9 +48,15 @@ export const updateProfile = async (req: Request, res: Response) => {
           console.error("Ошибка при сохранении изображения:", err);
           return res.status(500).send("Ошибка при сохранении");
         }
-        const result = await updateUser(id, family, name, fileName, city);
-        if (result) {
-          res.status(200).json({ status: "ok", avatar: fileName });
+        const user = await getUser(id);
+        if (user?.avatar) {
+          const resultAvatar = await deleteAvatar(user.avatar);
+          if (resultAvatar) {
+            const result = await updateUser(id, family, name, fileName, city);
+            if (result) {
+              res.status(200).json({ status: "ok", avatar: fileName });
+            }
+          }
         }
       });
     } catch (error) {

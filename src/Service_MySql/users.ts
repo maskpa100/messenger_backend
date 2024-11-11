@@ -15,3 +15,9 @@ export const getUserById = async (userId: number): Promise<User | null> => {
   const result = await query_MySql(userCheckSql, [userId]);
   return result.length > 0 ? (result[0] as User) : null;
 };
+
+export const getUser = async (userId: number): Promise<User | null> => {
+  const selectUsersSql = `SELECT id, email, family, name, avatar, time, city FROM users WHERE id = ?`;
+  const result = await query_MySql(selectUsersSql, [userId]);
+  return result[0] as User;
+};
