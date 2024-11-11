@@ -8,6 +8,7 @@ import userRouter from "./Routers/user";
 import { SECRET_KEY } from "./config/authSecret";
 import { initWebSocketServer } from "./Routers/WebSocket";
 import settingRouter from "./Routers/setting";
+const path = require("path");
 
 const app = express();
 const port = 5000;
@@ -21,6 +22,7 @@ app.use("/auth", authRouter);
 app.use("/messengers", messengersRouter);
 app.use("/users", userRouter);
 app.use("/setting", settingRouter);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 initWebSocketServer(8080);
 

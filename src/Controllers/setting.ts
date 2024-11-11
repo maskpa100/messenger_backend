@@ -51,11 +51,9 @@ export const updateProfile = async (req: Request, res: Response) => {
         const user = await getUser(id);
         if (user?.avatar) {
           const resultAvatar = await deleteAvatar(user.avatar);
-          if (resultAvatar) {
-            const result = await updateUser(id, family, name, fileName, city);
-            if (result) {
-              res.status(200).json({ status: "ok", avatar: fileName });
-            }
+          const result = await updateUser(id, family, name, fileName, city);
+          if (result) {
+            res.status(200).json({ status: "ok", avatar: fileName });
           }
         }
       });

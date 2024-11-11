@@ -12,8 +12,11 @@ interface JwtPayload {
 interface User {
   id: number;
   email: string;
+  family: string;
+  name: string;
   password: string;
   avatar: string;
+  city: string;
 }
 export const login = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -55,7 +58,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       user: {
         userId: user.id,
         username: user.email,
+        family: user.family,
+        name: user.name,
         avatar: user.avatar,
+        city: user.city,
       },
     });
   } catch (error) {

@@ -10,17 +10,18 @@ export const info = async (req: Request, res: Response): Promise<void> => {
       : null;
 
   const getUserByIdSql =
-    "SELECT id, family,email name, avatar FROM users WHERE id = ?";
+    "SELECT id, family,email, name, avatar, city FROM users WHERE id = ?";
 
   const resultUser = await query_MySql(getUserByIdSql, [userId]);
-  console.log(resultUser[0].avatar);
+  console.log(resultUser[0]);
 
   const userInfo = {
     userId: resultUser[0].id,
-    username: resultUser[0].email,
+    email: resultUser[0].email,
     family: resultUser[0].family,
     name: resultUser[0].name,
     avatar: resultUser[0].avatar,
+    city: resultUser[0].city,
   };
   res.status(200).json({ message: "Доступ разрешен", userInfo, valid: true });
 };
