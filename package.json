@@ -21,9 +21,11 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.4",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/ws": "^8.5.12",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
