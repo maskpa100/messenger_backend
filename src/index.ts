@@ -8,6 +8,7 @@ import userRouter from "./Routers/user";
 import { SECRET_KEY } from "./config/authSecret";
 import { initWebSocketServer } from "./Routers/WebSocket";
 import settingRouter from "./Routers/setting";
+import { searchUsers } from "./Controllers/searchUsers";
 const path = require("path");
 
 const app = express();
@@ -23,6 +24,7 @@ app.use("/messengers", messengersRouter);
 app.use("/users", userRouter);
 app.use("/setting", settingRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.get("/search", searchUsers);
 
 initWebSocketServer(8080);
 
