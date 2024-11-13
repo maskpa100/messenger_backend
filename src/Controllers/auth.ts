@@ -72,7 +72,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { email, password, family, name, city } = req.body;
 
     // Проверяем, существует ли пользователь
     const userCheckQuery = "SELECT * FROM users WHERE email = ?";
@@ -88,8 +88,16 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Создаем пользователя
-    const userInsertQuery = "INSERT INTO users (email, password) VALUES (?, ?)";
-    await query_MySql(userInsertQuery, [email, hashedPassword]);
+    const userInsertQuery =
+      "INSERT INTO users (email, password, family, name, city, avatar) VALUES (?, ?, ?, ?, ?, ?)";
+    await query_MySql(userInsertQuery, [
+      email,
+      hashedPassword,
+      family,
+      name,
+      city,
+      "no-photo.png",
+    ]);
 
     // Отправляем ответ о успешной регистрации
     res.status(201).json({ message: "Пользователь зарегистрирован" });
