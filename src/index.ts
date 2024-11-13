@@ -26,7 +26,7 @@ app.use("/setting", settingRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get("/search", searchUsers);
 
-initWebSocketServer(8080);
+initWebSocketServer(8081);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

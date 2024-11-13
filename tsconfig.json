@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./node_modules/@types", "./src/types"],  // Важно указать папку с типами
     "types": ["node", "express"],
-    "outDir": "./disc",  
+    "outDir": "./disk",  
   },
   "include": ["src/**/*"]  // Убедитесь, что включены все файлы проекта
 }
