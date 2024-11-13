@@ -17,8 +17,8 @@ const app = express();
 const port = 5000;
 
 const sslOptions = {
-  key: fs.readFileSync("/server.key"), // Замените на путь к вашему файлу server.key
-  cert: fs.readFileSync("/server.cert"), // Замените на путь к вашему файлу server.cert
+  key: fs.readFileSync("./server.key"), // Замените на путь к вашему файлу server.key
+  cert: fs.readFileSync("./server.cert"), // Замените на путь к вашему файлу server.cert
 };
 
 app.use(express.json({ limit: "10mb" }));
