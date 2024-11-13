@@ -10,7 +10,7 @@ const path = require("path");
 require("dotenv").config({ path: ".env.local" });
 console.log(
   process.env.HOST,
-  process.env.USER,
+  process.env.USER_DATABASE,
   process.env.PASSWORD,
   process.env.DATABASE
 );
